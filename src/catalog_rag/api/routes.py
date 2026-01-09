@@ -78,15 +78,24 @@ def query_auto():
             results.append(_hoes_agent.run(query=query, top_k=top_k))
 
     # Merge: simple concatenation; in una versione avanzata puoi rerankare
+        results_by_topic = {}
+    results_by_topic = {}
     merged = []
+
     for r in results:
+        results_by_topic[r.topic] = r.results
         merged.extend(r.results)
+
+    # facoltativo: ordina il merge per score desc
+    merged.sort(key=lambda x: x.get("score", 0.0), reverse=True)
 
     return jsonify(
         {
             "query": query,
             "routed_topics": decision.topics,
             "top_k_per_topic": top_k,
+            "results_by_topic": results_by_topic,
             "results": merged,
         }
     )
+
